@@ -36,7 +36,7 @@ public class CodeGenerator {
                     builder.entityBuilder().enableLombok(); // 开启lombok
                     builder.controllerBuilder().enableRestStyle().enableHyphenStyle(); // 开启驼峰转换 开启restful api风格
     //                builder.mapperBuilder().enableBaseResultMap(); // 开启BaseResultMap
-                    builder.addInclude("bm_user") // 设置需要生成的表名
+                    builder.addInclude("bm_menu") // 设置需要生成的表名
                             .addTablePrefix("t_","bm_"); // 表前缀
                 })
                 .execute();

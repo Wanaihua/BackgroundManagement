@@ -2,9 +2,9 @@
   <div>
 
     <div style="padding: 10px 0">
-      <el-input style="width: 200px" placeholder="请输入名称" suffix-icon="el-icon-search" v-model="username"></el-input>
-      <el-input style="width: 200px" placeholder="请输入邮箱" suffix-icon="el-icon-message" v-model="email" class="ml-5"></el-input>
-      <el-input style="width: 200px" placeholder="请输入地址" suffix-icon="el-icon-position" v-model="address" class="ml-5"></el-input>
+      <el-input style="width: 200px" placeholder="请输入名称" suffix-icon="el-icon-search" v-model="name"></el-input>
+<!--      <el-input style="width: 200px" placeholder="请输入邮箱" suffix-icon="el-icon-message" v-model="email" class="ml-5"></el-input>
+      <el-input style="width: 200px" placeholder="请输入地址" suffix-icon="el-icon-position" v-model="address" class="ml-5"></el-input>-->
       <el-button class="ml-5" type="primary" @click="query">搜索</el-button>
       <el-button class="ml-5" type="warning" @click="reset" >重置</el-button>
     </div>
@@ -12,26 +12,24 @@
     <div style="padding: 10px 0">
       <el-button type="primary" @click="handleAdd">新增<i class="el-icon-circle-plus-outline"></i> </el-button>
       <el-button type="danger" @click="deleteBatch">批量删除<i class="el-icon-remove-outline"></i> </el-button>
-      <el-upload
-          action="http://localhost:8090/user/import" :show-file-list="false" accept="xlsx" :on-success="handleExcelImportSuccess" style="display: inline-block"> <!--上传地址-->
+<!--      <el-upload
+          action="http://localhost:8090/user/import" :show-file-list="false" accept="xlsx" :on-success="handleExcelImportSuccess" style="display: inline-block"> &lt;!&ndash;上传地址&ndash;&gt;
       <el-button type="primary" class="ml-5">导入<i class="el-icon-bottom"></i> </el-button>
       </el-upload>
-      <el-button type="primary" @click="exp" class="ml-5">导出<i class="el-icon-top"></i> </el-button>
+      <el-button type="primary" @click="exp" class="ml-5">导出<i class="el-icon-top"></i> </el-button>-->
     </div>
 
     <el-table :data="tableData" border stripe :header-cell-class-name="headerBg" @selection-change="handleSelectionChange">
       <el-table-column type="selection"  width="55"></el-table-column>
       <el-table-column prop="id" label="ID" width="80">
       </el-table-column>
-      <el-table-column prop="username" label="姓名" width="120">
+      <el-table-column prop="name" label="名称" width="120">
       </el-table-column>
-      <el-table-column prop="nickname" label="昵称" width="120">
+      <el-table-column prop="path" label="路径">
       </el-table-column>
-      <el-table-column prop="email" label="邮箱" width="200">
+      <el-table-column prop="icon" label="图标">
       </el-table-column>
-      <el-table-column prop="phone" label="电话" width="120">
-      </el-table-column>
-      <el-table-column prop="address" label="地址">
+      <el-table-column prop="description" label="描述">
       </el-table-column>
       <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
@@ -52,25 +50,22 @@
       </el-pagination>
     </div>
 
-    <el-dialog title="用户信息" :visible.sync="dialogFormVisible" width="30%">
+    <el-dialog title="角色信息" :visible.sync="dialogFormVisible" width="30%">
       <el-form label-width="80px">
         <el-form-item label="" style="display: none">
           <el-input v-model="form.id" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户名">
-          <el-input v-model="form.username" autocomplete="off"></el-input>
+        <el-form-item label="名称">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="昵称">
-          <el-input v-model="form.nickname" autocomplete="off"></el-input>
+        <el-form-item label="路径">
+          <el-input v-model="form.path" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="电话">
-          <el-input v-model="form.phone" autocomplete="off"></el-input>
+        <el-form-item label="图标">
+          <el-input v-model="form.icon" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="form.email" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="地址">
-          <el-input v-model="form.address" autocomplete="off"></el-input>
+        <el-form-item label="描述">
+          <el-input v-model="form.description" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -83,7 +78,7 @@
 
 <script>
 export default {
-  name: "User",
+  name: "role",
   data() {
     return {
       collapseBtnClass: "el-icon-s-fold",
@@ -93,9 +88,7 @@ export default {
       headerBg: "headerBg",
       pageNum: 1,
       pageSize: 5,
-      username: "",
-      address: "",
-      email: "",
+      name: "",
       total: 0,
       dialogFormVisible: false,
       multipleSelection: [],
@@ -120,13 +113,11 @@ export default {
       this.query();
     },
     query(){
-      this.request.get("/user/page?",{
+      this.request.get("/menu/page?",{
         params:{
           pageNum:this.pageNum,
           pageSize:this.pageSize,
-          username:this.username,
-          address:this.address,
-          email:this.email
+          name:this.name,
         }}).then(res=>{
         console.log(res)
         this.tableData = res.data.records;
@@ -134,9 +125,7 @@ export default {
       })
     },
     reset() {
-      this.username = "";
-      this.address = "";
-      this.email = "";
+      this.name = "";
       this.query();
     },
     handleAdd(){
@@ -145,7 +134,7 @@ export default {
     },
     save(){
       this.dialogFormVisible = false;
-      this.request.post("/user",this.form).then(res=>{
+      this.request.post("/menu",this.form).then(res=>{
         if(res.code==='200'){
           this.$message({
             message: '保存成功',
@@ -167,7 +156,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.request.delete("/user/"+id).then(res=>{
+        this.request.delete("/menu/"+id).then(res=>{
           if(res.code==='200'){
             this.$message({
               message: '删除成功',
@@ -207,8 +196,8 @@ export default {
           ids.push(item.id);
         })
         console.log(ids);
-        this.request.post("/user/deleteBatch", ids).then(res => {
-          if (res.code==='200') {
+        this.request.post("/menu/deleteBatch", ids).then(res => {
+          if (res.data) {
             this.$message({
               message: '删除成功',
               type: 'success'
@@ -232,7 +221,7 @@ export default {
         type: 'warning'
       }).then(() => {
 
-        window.open("http://localhost:8090/user/export");
+        window.open("http://localhost:8090/menu/export");
         this.$message({
           message: '导出成功',
           type: 'success'

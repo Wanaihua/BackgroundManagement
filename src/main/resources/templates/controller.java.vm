@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
+import com.yuhua.backgroundmanagement.common.Result;
 import java.util.List;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
@@ -52,8 +53,8 @@ public class ${table.controllerName} {
 
     //新增或更新
     @PostMapping
-    public Boolean save(@RequestBody ${entity} ${table.entityPath}){
-        return ${table.entityPath}Service.saveOrUpdate(${table.entityPath});
+    public Result save(@RequestBody ${entity} ${table.entityPath}){
+        return Result.success(${table.entityPath}Service.saveOrUpdate(${table.entityPath}));
     }
 
     //查询所有
@@ -64,21 +65,21 @@ public class ${table.controllerName} {
 
     //根据id删除
     @DeleteMapping("/{id}")
-    public boolean Delete(@PathVariable Integer id){
-        return ${table.entityPath}Service.removeById(id);
+    public Result Delete(@PathVariable Integer id){
+        return Result.success(${table.entityPath}Service.removeById(id));
     }
 
     @PostMapping("/deleteBatch")
-    public boolean deleteBatch(@RequestBody List<Integer> ids){
-        return ${table.entityPath}Service.removeByIds(ids);
+    public Result deleteBatch(@RequestBody List<Integer> ids){
+        return Result.success(${table.entityPath}Service.removeByIds(ids));
     }
 
     //分页查询
     @GetMapping("/page")
-    public Page<${entity}> findPage(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize){
+    public Result findPage(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize){
         QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("id");
-        return ${table.entityPath}Service.page(new Page<>(pageNum,pageSize));
+        return Result.success(${table.entityPath}Service.page(new Page<>(pageNum,pageSize),queryWrapper));
     }
 
 }

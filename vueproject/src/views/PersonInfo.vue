@@ -41,8 +41,8 @@ export default {
   name: "PersonInfo",
   data() {
     return {
+      user: JSON.parse(localStorage.getItem('user')),
       form:{},
-      user:localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):{}
     }
   },
   created() {
@@ -63,10 +63,7 @@ export default {
             type: 'success'
           });
           //更新浏览器存储的用户信息
-          this.getUser().then(res=>{
-            res.token=JSON.parse(localStorage.getItem("user")).token;
-            localStorage.setItem("user",JSON.stringify(res));
-          })
+          this.$emit("refreshUser");
         }else {
           this.$message.error('保存失败');
         }

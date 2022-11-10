@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -50,7 +53,7 @@ public class User implements Serializable {
     private String address;
 
     @ApiModelProperty("创建时间")
-    private LocalDateTime creatTime;
+    private Date creatTime;
 
     @ApiModelProperty("头像")
     private String avatarUrl;
@@ -111,11 +114,11 @@ public class User implements Serializable {
         this.address = address;
     }
 
-    public LocalDateTime getCreatTime() {
+    public Date getCreatTime() {
         return creatTime;
     }
 
-    public void setCreatTime(LocalDateTime creatTime) {
+    public void setCreatTime(Date creatTime) {
         this.creatTime = creatTime;
     }
 
