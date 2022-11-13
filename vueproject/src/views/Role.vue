@@ -66,14 +66,16 @@
     </el-dialog>
 
     <el-dialog title="菜单分配" :visible.sync="menuDialogVis" width="30%" style="padding: 0 50px">
-      <el-tree
+      <el-tree :props="props"
         :data="menuData"
         show-checkbox
         node-key="id"
-        :default-expanded-keys="[1]"
-        :default-checked-keys="[4]"
-        :props="defaultProps"
+        :default-expanded-keys="expends"
+        :default-checked-keys="checks"
         @check-change="handleCheckChange">
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span><i :class="data.icon"></i>{{ data.name }}</span>
+        </span>
       </el-tree>
       <div slot="footer" class="dialog-footer">
         <el-button @click="menuDialogVis = false">取 消</el-button>
@@ -103,36 +105,13 @@ export default {
       multipleSelection: [],
       tableData: [],
       form:{},
-      menuData: [
-        {
-          id:1,
-          label: "主页",
-          children:[]
-        },
-        {
-        id: 2,
-        label: '系统管理',
-        children: [{
-            id: 3,
-            label: '用户管理',
-            children: []
-          },
-          {
-            id:4,
-            label: '角色管理',
-            children: []
-          },
-          {
-            id: 5,
-            label: '菜单管理',
-            children: []
-          },
-          {
-            id: 6,
-            label: '文件管理',
-            children: []
-          }]
-      }]
+      menuData: [],
+      props: {
+        children: 'children',
+        label: 'name'
+      },
+      expends: [],
+      checks: []
     }
   },
   created() {
@@ -158,7 +137,6 @@ export default {
           pageSize:this.pageSize,
           name:this.name,
         }}).then(res=>{
-        console.log(res)
         this.tableData = res.data.records;
         this.total=res.data.total;
       })
@@ -281,6 +259,14 @@ export default {
     },
     selectMenu(roleId){
       this.menuDialogVis = true;
+
+      //请求菜单数据
+      this.request.get("/menu").then(res=>{
+        this.menuData = res.data;
+
+        //把后台返回的菜单数据处理成id数组
+        this.expends=this.menuData.map(v => v.id)
+      })
     },
     handleCheckChange(data, checked, indeterminate) {
       console.log(data, checked, indeterminate);

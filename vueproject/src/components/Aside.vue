@@ -26,7 +26,7 @@
       </template>
       <el-menu-item index="/user">
         <template slot="title">
-          <i class="el-icon-s-custom"></i>
+          <i class="el-icon-user"></i>
           <span slot="title">用户管理</span>
         </template>
       </el-menu-item>
@@ -38,7 +38,7 @@
       </el-menu-item>
       <el-menu-item index="/menu">
         <template slot="title">
-          <i class="el-icon-s-custom"></i>
+          <i class="el-icon-s-grid"></i>
           <span slot="title">菜单管理</span>
         </template>
       </el-menu-item>

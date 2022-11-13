@@ -19,7 +19,7 @@
       <el-button type="primary" @click="exp" class="ml-5">导出<i class="el-icon-top"></i> </el-button>-->
     </div>
 
-    <el-table :data="tableData" border stripe :header-cell-class-name="headerBg" @selection-change="handleSelectionChange">
+    <el-table :data="tableData" border stripe :header-cell-class-name="headerBg" row-key="id" @selection-change="handleSelectionChange">
       <el-table-column type="selection"  width="55"></el-table-column>
       <el-table-column prop="id" label="ID" width="80">
       </el-table-column>
@@ -27,28 +27,21 @@
       </el-table-column>
       <el-table-column prop="path" label="路径">
       </el-table-column>
-      <el-table-column prop="icon" label="图标">
+      <el-table-column prop="icon" label="图标" align="center">
+        <template slot-scope="scope">
+          <span :class="scope.row.icon" style="font-size: 30px;"></span>
+        </template>
       </el-table-column>
       <el-table-column prop="description" label="描述">
       </el-table-column>
       <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
+          <el-button type="text" size="small" @click="handleAdd(scope.row.id)" v-if="!scope.row.pid&&!scope.row.path">新增子菜单<i class="el-icon-plus"></i> </el-button>
           <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑<i class="el-icon-edit"></i> </el-button>
           <el-button type="text" size="small" @click="handleDelete(scope.row.id)">删除<i class="el-icon-remove-outline"></i> </el-button>
         </template>
       </el-table-column>
     </el-table>
-    <div style="padding: 10px 0">
-      <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="pageNum"
-          :page-sizes="[5, 10, 15, 20]"
-          :page-size="pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
-      </el-pagination>
-    </div>
 
     <el-dialog title="角色信息" :visible.sync="dialogFormVisible" width="30%">
       <el-form label-width="80px">
@@ -62,7 +55,15 @@
           <el-input v-model="form.path" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="图标">
-          <el-input v-model="form.icon" autocomplete="off"></el-input>
+            <el-select clearable v-model="form.icon" placeholder="请选择" style="width: 100%">
+              <el-option
+                  v-for="item in options"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.value">
+                <i :class="item.value" />{{ item.name }}
+              </el-option>
+            </el-select>
         </el-form-item>
         <el-form-item label="描述">
           <el-input v-model="form.description" autocomplete="off"></el-input>
@@ -94,6 +95,7 @@ export default {
       multipleSelection: [],
       tableData: [],
       form:{},
+      options:[]
     }
   },
   created() {
@@ -113,24 +115,23 @@ export default {
       this.query();
     },
     query(){
-      this.request.get("/menu/page?",{
+      this.request.get("/menu",{
         params:{
-          pageNum:this.pageNum,
-          pageSize:this.pageSize,
           name:this.name,
         }}).then(res=>{
-        console.log(res)
-        this.tableData = res.data.records;
-        this.total=res.data.total;
+        this.tableData = res.data;
       })
     },
     reset() {
       this.name = "";
       this.query();
     },
-    handleAdd(){
+    handleAdd(pid){
       this.dialogFormVisible = true;
       this.form = {};
+      if(pid){
+        this.form.pid = pid;
+      }
     },
     save(){
       this.dialogFormVisible = false;
@@ -147,8 +148,13 @@ export default {
       })
     },
     handleEdit(row){
-      this.form = row;
+      this.form = JSON.parse(JSON.stringify(row));
       this.dialogFormVisible = true;
+
+      //请求图标数据
+      this.request.get("/menu/icons").then(res=>{
+        this.options = res.data;
+      })
     },
     handleDelete(id){
       this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
