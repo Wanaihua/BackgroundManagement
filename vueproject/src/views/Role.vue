@@ -25,11 +25,13 @@
       </el-table-column>
       <el-table-column prop="name" label="名称" width="120">
       </el-table-column>
+      <el-table-column prop="flag" label="唯一标识" width="120">
+      </el-table-column>
       <el-table-column prop="description" label="描述">
       </el-table-column>
       <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="selectMenu(scope.row.id)">分配菜单<i class="el-icon-menu"></i></el-button>
+          <el-button type="text" size="small" @click="selectMenu(scope.row)">分配菜单<i class="el-icon-menu"></i></el-button>
           <el-button type="text" size="small" @click="handleEdit(scope.row.id)">编辑<i class="el-icon-edit"></i> </el-button>
           <el-button type="text" size="small" @click="handleDelete(scope.row.id)">删除<i class="el-icon-remove-outline"></i> </el-button>
         </template>
@@ -55,6 +57,9 @@
         <el-form-item label="名称">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="唯一标识">
+          <el-input v-model="form.flag" autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item label="描述">
           <el-input v-model="form.description" autocomplete="off"></el-input>
         </el-form-item>
@@ -70,16 +75,16 @@
         :data="menuData"
         show-checkbox
         node-key="id"
+        ref="tree"
         :default-expanded-keys="expends"
-        :default-checked-keys="checks"
-        @check-change="handleCheckChange">
+        :default-checked-keys="checks">
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <span><i :class="data.icon"></i>{{ data.name }}</span>
         </span>
       </el-tree>
       <div slot="footer" class="dialog-footer">
         <el-button @click="menuDialogVis = false">取 消</el-button>
-        <el-button type="primary" @click="save()">确 定</el-button>
+        <el-button type="primary" @click="saveRoleMenu">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -111,7 +116,9 @@ export default {
         label: 'name'
       },
       expends: [],
-      checks: []
+      checks: [],
+      roleId: 0,
+      roleFlag:''
     }
   },
   created() {
@@ -158,6 +165,26 @@ export default {
             type: 'success'
           });
           this.query();
+        }else {
+          this.$message.error('保存失败');
+        }
+      })
+    },
+    saveRoleMenu(){
+      this.request.post("/role/roleMenu/"+this.roleId,this.$refs.tree.getCheckedKeys()).then(res=>{
+        if(res.code==='200'){
+          this.$message({
+            message: '保存成功',
+            type: 'success'
+          });
+          this.menuDialogVis = false;
+
+          //操作管理员的时候后需要重新登陆
+          if(this.roleFlag==='ROLE_ADMIN'){
+            this.$store.commit('setMenuData', this.$refs.tree.getCheckedNodes());
+          }
+
+          this.$store.commit("logout")
         }else {
           this.$message.error('保存失败');
         }
@@ -231,45 +258,29 @@ export default {
         });
       });
     },
-    exp(){
-      this.$confirm('此操作将导出用户, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-
-        window.open("http://localhost:8090/role/export");
-        this.$message({
-          message: '导出成功',
-          type: 'success'
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消导出'
-        });
-      });
-    },
-    handleExcelImportSuccess(){
-      this.$message({
-        message: '导入成功',
-        type: 'success'
-      });
-      this.query();
-    },
-    selectMenu(roleId){
+    selectMenu(role){
       this.menuDialogVis = true;
+      this.roleId = role.id;
+      this.roleFlag=role.roleFlag;
 
       //请求菜单数据
       this.request.get("/menu").then(res=>{
         this.menuData = res.data;
-
         //把后台返回的菜单数据处理成id数组
         this.expends=this.menuData.map(v => v.id)
       })
-    },
-    handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
+      //请求用户拥有的菜单权限
+      this.request.get("/role/roleMenu/"+this.roleId).then(res=>{
+        this.checks = res.data;
+        this.request.get("/menu/ids").then(r=>{
+          const ids=r.data;
+          ids.forEach(id =>{
+            if(!this.checks.includes(id)){
+              this.$refs.tree.setChecked(id,false);
+            }
+          })
+        })
+      })
     },
 
   }

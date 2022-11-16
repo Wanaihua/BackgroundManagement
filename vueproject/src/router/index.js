@@ -7,27 +7,6 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
-    component: () => import('../views/Manage.vue'),
-    redirect: '/home',
-    children: [
-      {path:'home',name:'首页',component:()=>import('../views/Home.vue')},
-      {path:'user',name:'用户管理',component:()=>import('../views/User.vue')},
-      {path:'role',name:'角色管理',component:()=>import('../views/Role.vue')},
-      {path:'menu',name:'菜单管理',component:()=>import('../views/Menu.vue')},
-      {path:'PersonInfo',name:'个人信息',component:()=>import('../views/PersonInfo.vue')},
-      {path:'file',name:'文件管理',component:()=>import('../views/File.vue')},
-   ]
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  },
-  {
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue')
@@ -36,6 +15,11 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: () => import('../views/Register.vue')
+  },
+  {
+    path: '*',
+    name: '404',
+    component: () => import('../views/404.vue')
   }
 ]
 
@@ -52,3 +36,52 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
+
+//刷新路由会导致页面重置
+export const setRoutes=() =>{
+  const storeMenus=localStorage.getItem('menus') // 获取菜单
+  if(storeMenus) {
+    //拼装动态路由
+    const manageRoute={
+      path: '/',
+      component: () => import('../views/Manage.vue'),
+      name:'Mange',
+      redirect: '/home',
+      children: []
+    }
+    const menus=JSON.parse(storeMenus)
+    menus.forEach(item=>{
+      if(item.path){ //当且仅当path不为空才设置路由
+        let itemMenu = {
+          path: item.path.replace("/",""),
+          name:item.name,
+          component: () => import('../views/'+item.pagePath+'.vue')
+        }
+        manageRoute.children.push(itemMenu)
+      }else if(item.children.length){
+        item.children.forEach(item=>{
+          if(item.path){
+            let itemMenu = {
+              path: item.path.replace("/",""),
+              name:item.name,
+              component: () => import('../views/'+item.pagePath+'.vue')
+            }
+            manageRoute.children.push(itemMenu)
+          }
+        })
+      }
+    })
+    //获取当前的路由名称数组
+    const currentRouters=router.getRoutes().map(v => v.name);
+    //没有再添加
+    if(!currentRouters.includes('Mange')){
+      //动态添加到现在的路由对象去
+      router.addRoute(manageRoute);
+    }
+
+  }
+}
+
+//重置我就再set一遍
+setRoutes()
+

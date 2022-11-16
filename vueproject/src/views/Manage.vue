@@ -8,13 +8,14 @@
 
       <el-container>
         <el-header style="border-bottom: 1px solid #ccc;">
-          <Header :collapseBtnClass="collapseBtnClass" :collapse="isCollapse" :user="user" />
+          <Header :collapseBtnClass="collapseBtnClass" :collapse="collapse" :user="user" />
         </el-header>
 
         <el-main>
 <!--          表示当前页面子路由会在router-view中显示-->
           <router-view @refreshUser="getUser"/>
         </el-main>
+
       </el-container>
     </el-container>
   </div>

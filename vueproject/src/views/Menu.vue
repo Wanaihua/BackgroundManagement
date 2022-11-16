@@ -27,6 +27,8 @@
       </el-table-column>
       <el-table-column prop="path" label="路径">
       </el-table-column>
+      <el-table-column prop="pagePath" label="页面路径">
+      </el-table-column>
       <el-table-column prop="icon" label="图标" align="center">
         <template slot-scope="scope">
           <span :class="scope.row.icon" style="font-size: 30px;"></span>
@@ -53,6 +55,9 @@
         </el-form-item>
         <el-form-item label="路径">
           <el-input v-model="form.path" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="页面路径">
+          <el-input v-model="form.pagePath" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="图标">
             <el-select clearable v-model="form.icon" placeholder="请选择" style="width: 100%">

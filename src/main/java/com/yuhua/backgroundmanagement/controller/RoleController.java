@@ -40,8 +40,8 @@ public class RoleController {
 
     //查询所有
     @GetMapping
-    public List<Role> findAll() {
-        return roleService.list();
+    public Result findAll() {
+        return Result.success(roleService.list());
     }
 
     //根据id删除
@@ -62,6 +62,24 @@ public class RoleController {
         queryWrapper.like("name",name);
         queryWrapper.orderByDesc("id");
         return Result.success(roleService.page(new Page<>(pageNum,pageSize),queryWrapper));
+    }
+
+    /**
+     * 绑定角色和菜单关系
+     * @param roleId  角色id
+     * @param menuIds  菜单id数组
+     * @return
+     */
+    @PostMapping("/roleMenu/{roleId}")
+    public Result roleMenu(@PathVariable Integer roleId,@RequestBody List<Integer> menuIds){
+        roleService.setRoleMenu(roleId,menuIds);
+        return Result.success();
+    }
+
+    @GetMapping("/roleMenu/{roleId}")
+    public Result getRoleMenu(@PathVariable Integer roleId){
+
+        return Result.success(roleService.getRoleMenu(roleId));
     }
 
 }

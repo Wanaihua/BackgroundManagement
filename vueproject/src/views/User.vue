@@ -25,6 +25,8 @@
       </el-table-column>
       <el-table-column prop="username" label="姓名" width="120">
       </el-table-column>
+      <el-table-column prop="role" label="角色">
+      </el-table-column>
       <el-table-column prop="nickname" label="昵称" width="120">
       </el-table-column>
       <el-table-column prop="email" label="邮箱" width="200">
@@ -34,7 +36,7 @@
       <el-table-column prop="address" label="地址">
       </el-table-column>
       <el-table-column label="操作" width="200" align="center">
-        <template slot-scope="scope">
+      <template slot-scope="scope">
           <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑<i class="el-icon-edit"></i> </el-button>
           <el-button type="text" size="small" @click="handleDelete(scope.row.id)">删除<i class="el-icon-remove-outline"></i> </el-button>
         </template>
@@ -59,6 +61,16 @@
         </el-form-item>
         <el-form-item label="用户名">
           <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="角色">
+          <el-select clearable v-model="form.role" placeholder="请选择角色" style="width: 100%">
+            <el-option
+                v-for="item in roles"
+                :key="item.name"
+                :label="item.name"
+                :value="item.flag">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="昵称">
           <el-input v-model="form.nickname" autocomplete="off"></el-input>
@@ -101,6 +113,7 @@ export default {
       multipleSelection: [],
       tableData: [],
       form:{},
+      roles:[]
     }
   },
   created() {
@@ -128,9 +141,11 @@ export default {
           address:this.address,
           email:this.email
         }}).then(res=>{
-        console.log(res)
         this.tableData = res.data.records;
         this.total=res.data.total;
+      })
+      this.request.get("/role").then(res=>{
+        this.roles=res.data;
       })
     },
     reset() {

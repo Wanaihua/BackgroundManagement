@@ -49,18 +49,7 @@ public class MenuController {
     //查询所有
     @GetMapping
     public Result findAll(@RequestParam(defaultValue = "") String name) {
-        QueryWrapper<Menu> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("name",name);
-        //查询所有数据
-        List<Menu> list=menuService.list(queryWrapper);
-        //找出所有的一级菜单
-        List<Menu> parentNode=list.stream().filter(menu -> menu.getPid()==null).collect(Collectors.toList());
-        //找出所有的二级菜单
-        for(Menu menu:parentNode){
-            //筛选所有数据中pid=父级id的数据就是二级菜单
-            menu.setChildren(list.stream().filter(m -> menu.getId().equals(m.getPid())).collect(Collectors.toList()));
-        }
-        return Result.success(parentNode);
+        return Result.success(menuService.findMenus(name));
     }
 
     //根据id删除
@@ -72,6 +61,11 @@ public class MenuController {
     @PostMapping("/deleteBatch")
     public Result deleteBatch(@RequestBody List<Integer> ids){
         return Result.success(menuService.removeByIds(ids));
+    }
+
+    @GetMapping("/ids")
+    public Result findAllIds(){
+        return Result.success(menuService.list().stream().map(Menu::getId));
     }
 
     //分页查询

@@ -44,5 +44,7 @@ public class Menu implements Serializable {
 
     private Integer pid;
 
+    private String pagePath;
+
 
 }

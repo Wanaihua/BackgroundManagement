@@ -36,7 +36,7 @@ export default {
   name: "Header",
   props:{
     collapseBtnClass:String,
-    collapse:Boolean,
+    collapse:Function,
     user:Object,
   },
   computed:{
@@ -56,10 +56,9 @@ export default {
   },
   methods:{
     logout(){
-      localStorage.removeItem('user');
-      this.$router.push('/login');
+      this.$store.commit("logout");
       this.$message.success('退出成功');
-    }
+    },
   }
 
 }
