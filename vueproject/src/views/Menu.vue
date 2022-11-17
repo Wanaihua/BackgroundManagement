@@ -10,7 +10,7 @@
     </div>
 
     <div style="padding: 10px 0">
-      <el-button type="primary" @click="handleAdd">新增<i class="el-icon-circle-plus-outline"></i> </el-button>
+      <el-button type="primary" @click="handleAdd()">新增<i class="el-icon-circle-plus-outline"></i> </el-button>
       <el-button type="danger" @click="deleteBatch">批量删除<i class="el-icon-remove-outline"></i> </el-button>
 <!--      <el-upload
           action="http://localhost:8090/user/import" :show-file-list="false" accept="xlsx" :on-success="handleExcelImportSuccess" style="display: inline-block"> &lt;!&ndash;上传地址&ndash;&gt;
@@ -47,9 +47,6 @@
 
     <el-dialog title="角色信息" :visible.sync="dialogFormVisible" width="30%">
       <el-form label-width="80px">
-        <el-form-item label="" style="display: none">
-          <el-input v-model="form.id" autocomplete="off"></el-input>
-        </el-form-item>
         <el-form-item label="名称">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
@@ -100,7 +97,7 @@ export default {
       multipleSelection: [],
       tableData: [],
       form:{},
-      options:[]
+      options:[],
     }
   },
   created() {
@@ -132,7 +129,12 @@ export default {
       this.query();
     },
     handleAdd(pid){
+      console.log(pid);
       this.dialogFormVisible = true;
+      //请求图标数据
+      this.request.get("/menu/icons").then(res=>{
+        this.options = res.data;
+      })
       this.form = {};
       if(pid){
         this.form.pid = pid;
