@@ -18,9 +18,12 @@
         <i class="el-icon-arrow-down" style="margin-left: 5px"></i>
       </div>
 
-      <el-dropdown-menu slot="dropdown" style="height: 70px; width: 80px;text-align: center">
+      <el-dropdown-menu slot="dropdown" style="height: 100px; width: 80px;text-align: center">
         <el-dropdown-item style="font-size: 14px;padding: 5px 0 0 0px;color: #666666;">
           <router-link to="/PersonInfo" style="text-decoration: none;color: #666666">个人信息</router-link>
+        </el-dropdown-item>
+        <el-dropdown-item style="font-size: 14px;padding: 5px 0 0 0px;color: #666666;">
+          <router-link to="/UpdatePassWord" style="text-decoration: none;color: #666666">修改密码</router-link>
         </el-dropdown-item>
         <el-dropdown-item style="font-size: 14px;padding: 5px 5px 0 0px;">
           <span style="text-decoration: none;" @click="logout">退出</span>

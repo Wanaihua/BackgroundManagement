@@ -66,7 +66,7 @@ export const setRoutes=() =>{
         redirect: '/home',
         children: [
           {path: 'personInfo', name: '个人信息', component: () => import('../views/PersonInfo.vue')},
-          {path: 'password', name: '修改密码', component: () => import('../views/PassWord.vue')},
+          {path: 'updatePassWord', name: '修改密码', component: () => import('../views/UpdatePassWord.vue')},
         ]
       }
 
